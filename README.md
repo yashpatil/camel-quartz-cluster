@@ -7,6 +7,8 @@ In the absence of Fabric, there are a few options to achieve this particular fun
 * Camel Quartz - This component has clustering support. If you are using quartz consumers, in clustered mode, you can have only one of the routes triggered at a time.
 * Camel JGroups - Using JGroupsFilters, we can get master/slave capability
 
+### NOTE: This demo has been created using Red Hat JBoss Fuse 6.0.0-redhat-60024, so the version of Camel that we are limited to is 2.10-redhat-60024, which only supports Quartz 1.x components.
+
 For background reference, see:
 
 * [Master/Slave Failover for Camel Routes] (http://java.dzone.com/articles/masterslave-failover-camel)
@@ -80,6 +82,11 @@ The camel context has been configured to fire off every 5 seconds and print a lo
 
 
 ## Testing
+
+### Create database and tables in PostgreSQL
+
+Run the commands from the file `tables_postgres.sql` to create the Quartz tables required for JDBC persistence. Double check the port and credentials used in the `camel-context.xml` file for the PostgreSQL datasource.
+
 
 ### Install two versions of Red Hat JBoss Fuse (this test was done using version 6.0.0-redhat-60024)
 
