@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="quartzDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="org.postgresql.Driver"/>
+    <property name="url" value="jdbc:postgresql://localhost:5432/quartz"/>
+    <property name="username" value="quartz"/>
+    <property name="password" value="quartz"/>
+  </bean>
+
+  <bean id="quartz" class="org.apache.camel.component.quartz.QuartzComponent">
+    <property name="scheduler" ref="scheduler"/>
+  </bean>
+
+  <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="dataSource" ref="quartzDataSource"/>
+    <property name="autoStartup" value="false"/>
+    <property name="schedulerContextAsMap">
+      <!-- hook Camel into Quartz -->
+      <map>
+        <!-- CamelJob makes use of the following key below to find the same Job as we failover to 'app-two' -->
+        <!-- QuartzConstants.QUARTZ_CAMEL_CONTEXT + "-" + camelContextName  -->
+        <entry key="CamelQuartzCamelContext" value-ref="quartzCluster"/>
+      </map>
+    </property>
+    <property name="quartzProperties">
+      <props>
+        <prop key="org.quartz.scheduler.instanceName">myscheduler</prop>
+        <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+        <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+        <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
+        <prop key="org.quartz.jobStore.isClustered">true</prop>
+        <prop key="org.quartz.jobStore.clusterCheckinInterval">5000</prop>
+      </props>
+    </property>
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring" id="quartzCluster" managementNamePattern="#name#">
+    <route id="clusteredRoute">
+      <from uri="quartz://clustergroup/clusterTimerName?job.name=demoQuartzCluster&amp;cron=0/5+*+*+*+*+?"/>
+      <log message="Fired quartz cluster trigger"/>
+    </route>
+  </camelContext>
+</beans>
