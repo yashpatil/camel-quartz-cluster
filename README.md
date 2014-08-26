@@ -7,7 +7,7 @@ In the absence of Fabric, there are a few options to achieve this particular fun
 * Camel Quartz - This component has clustering support. If you are using quartz consumers, in clustered mode, you can have only one of the routes triggered at a time.
 * Camel JGroups - Using JGroupsFilters, we can get master/slave capability
 
-### NOTE: This demo has been created using Red Hat JBoss Fuse 6.0.0-redhat-60024, so the version of Camel that we are limited to is 2.10-redhat-60024, which only supports Quartz 1.x components.
+#### NOTE: This demo has been created using Red Hat JBoss Fuse 6.0.0-redhat-60024, so the version of Camel that we are limited to is 2.10-redhat-60024, which only supports Quartz 1.x components.
 
 #### This code is not supported by my employer - Red Hat. I have made this available online to save someone an hour or so of Google searches.
 
